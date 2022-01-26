@@ -1,9 +1,18 @@
-FROM ubuntu:14.04
-MAINTAINER Ignacio Millán <ignacio.millan@bq.com>
-RUN apt-get update && apt-get install -y python-pip
-COPY src /usr/local/src
-RUN pip install -r /usr/local/src/requirements.txt
+FROM python:3.8.3-alpine
+
+RUN pip install --upgrade pip
+
+RUN adduser -D myuser
+USER myuser
+WORKDIR /home/myuser
+
+COPY --chown=myuser:myuser src /home/myuser/src
+RUN pip install --no-cache-dir --user -r /home/myuser/src/requirements.txt
+
+ENV PATH="/home/myuser/.local/bin:${PATH}"
+
+COPY --chown=myuser:myuser . .
 
 EXPOSE 80
-WORKDIR /usr/local/src
+WORKDIR /home/myuser/src
 ENTRYPOINT ["python","webapp.py"]
