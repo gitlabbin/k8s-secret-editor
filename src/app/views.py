@@ -242,7 +242,7 @@ def submit_secret(namespace,secret):
 
             data={}
             for x in previous['data']:
-                data[x] = base64.b64decode(previous['data'][x])
+                data[x] = base64.b64decode(previous['data'][x]).decode("utf-8")
             error = json.loads(rc.content)['message']
             return render_template('edit_secret.html', namespace=namespace, secret=secret, data=data, titulo='Edit secret', errors=error)
         else:
