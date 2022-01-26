@@ -1,4 +1,5 @@
-Flask == 0.10.1
-WTForms == 2.1
-Requests == 2.9.1
-PyYAML == 3.12
+Flask == 1.0.2
+WTForms == 3.0.1
+Requests == 2.19.0
+PyYAML == 3.13
+Flask-WTF==1.0.0

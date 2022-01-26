@@ -3,7 +3,7 @@
 from requests.auth import HTTPDigestAuth
 from functools import wraps
 from flask import render_template, flash, redirect, request, send_from_directory, Response
-from app import app
+from . import app
 #from .forms import SearchForm
 import requests
 import json
@@ -142,13 +142,13 @@ def create_secret(namespace):
           },
           "type": "Opaque"
     }
-    print new
+    print(new)
     rc = post_api('/api/v1/namespaces/'+namespace+'/secrets', data=json.dumps(new))
     #rc = requests.post('https://104.155.45.53/api/v1/namespaces/'+namespace+'/secrets', data=json.dumps(new), headers={'Authorization':'Basic YWRtaW46QWhpSWdPcmRFOXBVdjRHeA==','content-type': 'application/json'}, auth=('admin', 'AhiIgOrdE9pUv4Gx'),verify=False)
-    print 'CREATE:'
-    print rc.status_code
-    print rc.json()
-    print rc.content
+    print('CREATE:')
+    print(rc.status_code)
+    print(rc.json())
+    print(rc.content)
     if rc.status_code != 201:
         flash('ERROR WHEN CREATING SECRET ' + secret)
         return redirect("/"+namespace)
@@ -182,7 +182,7 @@ def edit_secret(namespace,secret):
         if 'data' in d:
             for x in d['data']:
                 data[x] = base64.b64decode(d['data'][x])
-                print data[x]
+                print(data[x])
         return render_template('edit_secret.html',namespaces=namespaces, secrets=secrets, namespace=d['metadata']['namespace'], secret=d['metadata']['name'], data=data, titulo='Edit secret', errors='')
     else:
         return render_template('select_secret.html', namespaces=namespaces, secrets=secrets, namespace=namespace, titulo='Select secret', error='Secret does not exist in selected namespace')
@@ -208,34 +208,34 @@ def submit_secret(namespace,secret):
         for key in data:
             new["data"][key] = base64.b64encode(data[key].encode('utf-8'))
         body = json.dumps(new, indent=4)
-        print body
+        print(body)
 
         #rp = requests.get('https://104.155.45.53/api/v1/namespaces/'+namespace+'/secrets/'+secret, auth=('admin', 'AhiIgOrdE9pUv4Gx'),verify=False)
         rp = read_api('/api/v1/namespaces/'+namespace+'/secrets/'+secret)
         previous = json.loads(rp.content)
-        print 'BACKUP:'
+        print('BACKUP:')
         pprint.pprint(previous)
 
         #rd = requests.delete('https://104.155.45.53/api/v1/namespaces/'+namespace+'/secrets/'+secret, auth=('admin', 'AhiIgOrdE9pUv4Gx'),verify=False)
         rd = delete_api('/api/v1/namespaces/'+namespace+'/secrets/'+secret)
-        print 'delete:'
-        print rd.status_code
-        print rd.json()
-        print rd.content
+        print('delete:')
+        print(rd.status_code)
+        print(rd.json())
+        print(rd.content)
 
         #rc = requests.post('https://104.155.45.53/api/v1/namespaces/'+namespace+'/secrets', data=body, headers={'Authorization':'Basic YWRtaW46QWhpSWdPcmRFOXBVdjRHeA==','content-type': 'application/json'}, auth=('admin', 'AhiIgOrdE9pUv4Gx'),verify=False)
         rc = post_api('/api/v1/namespaces/'+namespace+'/secrets', data=body)
-        print 'CREATE:'
-        print rc.status_code
-        print rc.json()
-        print rc.content
+        print('CREATE:')
+        print(rc.status_code)
+        print(rc.json())
+        print(rc.content)
 
         if rc.status_code != 201:
             #rr = requests.post('https://104.155.45.53/api/v1/namespaces/'+namespace+'/secrets', data=json.dumps(previous), headers={'Authorization':'Basic YWRtaW46QWhpSWdPcmRFOXBVdjRHeA==','content-type': 'application/json'}, auth=('admin', 'AhiIgOrdE9pUv4Gx'),verify=False)
             rr = post_api('/api/v1/namespaces/'+namespace+'/secrets', data=json.dumps(previous))
-            print 'RESTORE:'
-            print rr.status_code
-            print rr.json()
+            print('RESTORE:')
+            print(rr.status_code)
+            print(rr.json())
 
             data={}
             for x in previous['data']:
@@ -251,10 +251,10 @@ def submit_secret(namespace,secret):
 def delete_secret(namespace,secret):
 
     rd = delete_api('/api/v1/namespaces/'+namespace+'/secrets/'+secret)
-    print 'delete:'
-    print rd.status_code
-    print rd.json()
-    print rd.content
+    print('delete:')
+    print(rd.status_code)
+    print(rd.json())
+    print(rd.content)
 
     namespaces=[]
     secrets=[]
