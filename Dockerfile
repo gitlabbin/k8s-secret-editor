@@ -1,10 +1,17 @@
 FROM python:3.8.5-alpine
 
+ARG USERNAME=myuser
+ARG USERHOME=/home/$USERNAME
+
 RUN pip install --upgrade pip
 
-RUN adduser -D myuser
-USER myuser
-WORKDIR /home/myuser
+RUN addgroup $USERNAME
+RUN adduser -u 1000 -SH -G $USERNAME $USERNAME
+RUN mkdir -p $USERHOME
+RUN chown -R $USERNAME:$USERNAME $USERHOME
+
+USER $USERNAME
+WORKDIR $USERHOME
 
 ENV PATH="/home/myuser/.local/bin:${PATH}"
 COPY --chown=myuser:myuser src /home/myuser/src
