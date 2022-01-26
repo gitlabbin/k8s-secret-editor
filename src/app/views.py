@@ -12,6 +12,9 @@ import pprint
 import base64
 import os
 from config import *
+import urllib3
+from urllib3.exceptions import InsecureRequestWarning
+urllib3.disable_warnings(InsecureRequestWarning)
 
 def check_auth(username, password):
     """This function is called to check if a username /
@@ -181,7 +184,7 @@ def edit_secret(namespace,secret):
         data={}
         if 'data' in d:
             for x in d['data']:
-                data[x] = base64.b64decode(d['data'][x])
+                data[x] = base64.b64decode(d['data'][x]).decode("utf-8")
                 print(data[x])
         return render_template('edit_secret.html',namespaces=namespaces, secrets=secrets, namespace=d['metadata']['namespace'], secret=d['metadata']['name'], data=data, titulo='Edit secret', errors='')
     else:
