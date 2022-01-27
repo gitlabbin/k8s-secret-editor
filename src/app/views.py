@@ -6,6 +6,7 @@ from flask import render_template, flash, redirect, request, send_from_directory
 from . import app
 #from .forms import SearchForm
 import requests
+import logging
 import json
 import yaml
 import pprint
@@ -14,7 +15,15 @@ import os
 from config import *
 import urllib3
 from urllib3.exceptions import InsecureRequestWarning
+
 urllib3.disable_warnings(InsecureRequestWarning)
+# You must initialize logging, otherwise you'll not see debug output.
+logging.basicConfig()
+logging.getLogger().setLevel(logging.DEBUG)
+requests_log = logging.getLogger("requests.packages.urllib3")
+requests_log.setLevel(logging.DEBUG)
+requests_log.propagate = True
+
 
 def check_auth(username, password):
     """This function is called to check if a username /
@@ -103,11 +112,15 @@ def delete_api(query):
 def search_namespaces():
     # namespaces=['nm1','nm2','nm3']
     namespaces=[]
-    r = read_api('/api/v1/namespaces')
-    d = json.loads(r.content)
-    for i in d['items']:
-        if i['metadata']['name'] != 'kube-system':
-            namespaces.append(i['metadata']['name'])
+    try:
+        r = read_api('/api/v1/namespaces')
+        d = json.loads(r.content)
+        for i in d['items']:
+            if i['metadata']['name'] != 'kube-system':
+                namespaces.append(i['metadata']['name'])
+    except:
+        namespaces.append('default')
+
     return render_template('select_namespace.html', namespaces=namespaces, titulo='Selecciona namespace')
 
 @app.route('/<string:namespace>', methods=['GET'])
@@ -122,11 +135,14 @@ def search_secrets(namespace):
     for i in d['items']:
         if 'default-token' not in i['metadata']['name']:
             secrets.append(i['metadata']['name'])
-    r = read_api('/api/v1/namespaces')
-    d = json.loads(r.content)
-    for i in d['items']:
-        if i['metadata']['name'] != 'kube-system':
-            namespaces.append(i['metadata']['name'])
+    try:
+        r = read_api('/api/v1/namespaces')
+        d = json.loads(r.content)
+        for i in d['items']:
+            if i['metadata']['name'] != 'kube-system':
+                namespaces.append(i['metadata']['name'])
+    except:
+        namespaces.append('default')
     return render_template('select_secret.html', namespace=namespace , namespaces=namespaces, secrets=secrets, titulo='Selecciona secret')
 
 @app.route('/<string:namespace>', methods=['POST'])
@@ -171,11 +187,14 @@ def edit_secret(namespace,secret):
     for i in d['items']:
         if 'default-token' not in i['metadata']['name']:
             secrets.append(i['metadata']['name'])
-    r = read_api('/api/v1/namespaces')
-    d = json.loads(r.content)
-    for i in d['items']:
-        if i['metadata']['name'] != 'kube-system':
-            namespaces.append(i['metadata']['name'])
+    try:
+        r = read_api('/api/v1/namespaces')
+        d = json.loads(r.content)
+        for i in d['items']:
+            if i['metadata']['name'] != 'kube-system':
+                namespaces.append(i['metadata']['name'])
+    except:
+        namespaces.append('default')
 
     r = read_api('/api/v1/namespaces/'+namespace+'/secrets/'+secret)
     if r.status_code == 200:
@@ -270,11 +289,14 @@ def delete_secret(namespace,secret):
     for i in d['items']:
         if 'default-token' not in i['metadata']['name']:
             secrets.append(i['metadata']['name'])
-    r = read_api('/api/v1/namespaces')
-    d = json.loads(r.content)
-    for i in d['items']:
-        if i['metadata']['name'] != 'kube-system':
-            namespaces.append(i['metadata']['name'])
+    try:
+        r = read_api('/api/v1/namespaces')
+        d = json.loads(r.content)
+        for i in d['items']:
+            if i['metadata']['name'] != 'kube-system':
+                namespaces.append(i['metadata']['name'])
+    except:
+        namespaces.append('default')
 
     if rd.status_code == 200:
         flash('Removed secret: ' + secret)
