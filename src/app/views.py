@@ -213,7 +213,7 @@ def submit_secret(namespace,secret):
               "type": "Opaque"
         }
         for key in data:
-            new["data"][key] = base64.b64encode(data[key].encode('utf-8'))
+            new["data"][key] = base64.b64encode(data[key].encode('utf-8')).decode('utf-8')
         body = json.dumps(new, indent=4)
         print(body)
 
