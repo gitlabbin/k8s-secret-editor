@@ -16,6 +16,9 @@ from config import *
 import urllib3
 from urllib3.exceptions import InsecureRequestWarning
 
+import logging
+import logging.config
+
 urllib3.disable_warnings(InsecureRequestWarning)
 # You must initialize logging, otherwise you'll not see debug output.
 logging.basicConfig()
@@ -199,7 +202,8 @@ def edit_secret(namespace,secret):
                 except:
                     print("An exception occurred maybe it is a binary file???")
                     data[x] = "Can't open the file, if it is binary"
-                print(data[x])
+                #print(data[x])
+                logging.info("Raw data: ", data[x])
         return render_template('edit_secret.html',namespaces=namespaces, secrets=secrets, namespace=d['metadata']['namespace'], secret=d['metadata']['name'], data=data, titulo='Edit secret', errors='')
     else:
         return render_template('select_secret.html', namespaces=namespaces, secrets=secrets, namespace=namespace, titulo='Select secret', error='Secret does not exist in selected namespace')
