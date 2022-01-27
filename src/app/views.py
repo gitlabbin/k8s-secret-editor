@@ -203,7 +203,7 @@ def edit_secret(namespace,secret):
                     print("An exception occurred maybe it is a binary file???")
                     data[x] = "Can't open the file, if it is binary"
                 #print(data[x])
-                logging.info("Raw data: ", data[x])
+                logging.info(data[x])
         return render_template('edit_secret.html',namespaces=namespaces, secrets=secrets, namespace=d['metadata']['namespace'], secret=d['metadata']['name'], data=data, titulo='Edit secret', errors='')
     else:
         return render_template('select_secret.html', namespaces=namespaces, secrets=secrets, namespace=namespace, titulo='Select secret', error='Secret does not exist in selected namespace')
