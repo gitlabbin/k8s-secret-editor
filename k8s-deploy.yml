@@ -1,0 +1,45 @@
+---
+kind: "Deployment"
+apiVersion: apps/v1
+metadata:
+  name: "k8s-secrets-editor"
+  labels:
+    state: "serving"
+spec:
+  replicas: 1
+  selector:
+      matchLabels:
+        app: "k8s-secrets-editor"
+  template:
+    metadata:
+      labels:
+        app: "k8s-secrets-editor"
+        name: "k8s-secrets-editor"
+    spec:
+      containers:
+        - image: docker.io/briangxchen/k8s-secret-editor
+          imagePullPolicy: Always
+          name: k8s-secrets-editor
+          ports:
+            - containerPort: 8080
+              name: http
+          # Set HTTP admin password. Default admin
+          env:
+            - name: ADMIN_PASSWORD
+              value: 'admin'
+      serviceAccountName: k8s-secret-editor
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    name: "k8s-secrets-editor"
+  name: "k8s-secrets-editor"
+spec:
+  ports:
+    - port: 8080
+      name: http
+  selector:
+    name: "k8s-secrets-editor"
+  # Uncomment to create a load balancer for this service
+  type: LoadBalancer
