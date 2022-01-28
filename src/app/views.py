@@ -248,7 +248,7 @@ def edit_secret(namespace, secret):
                 except Exception as ex:
                     logger.error("An exception occurred maybe it is a binary file: %s", ex)
                     data[x] = "Can't open the file, if it is binary"
-                logger.info(data[x])
+                logger.debug(data[x])
         return render_template('edit_secret.html', namespaces=namespaces, secrets=secrets,
                                namespace=d['metadata']['namespace'], secret=d['metadata']['name'], data=data,
                                titulo='Edit secret', errors='')
