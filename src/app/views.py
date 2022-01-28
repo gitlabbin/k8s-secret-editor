@@ -20,6 +20,7 @@ from pprint import pformat
 import logging
 import logging.config
 import contextlib
+from config import settings
 
 try:
     from http.client import HTTPConnection  # py3
@@ -72,6 +73,15 @@ def check_auth(username, password):
     """This function is called to check if a username /
     password combination is valid.
     """
+    users = settings["users"]
+    admins = settings["admins"]
+    viewers = settings["viewers"]
+    user = list(filter(lambda item: item["name"] == username, users))
+
+    if len(user) == 1:
+        return password == base64.b64decode(user[0]["password"]).decode("utf-8")
+    else:
+        return False
 
     # If ADMIN_PASSWORD defined, then check that password is correct
     if 'ADMIN_PASSWORD' in os.environ and os.environ['ADMIN_PASSWORD'] != '':
