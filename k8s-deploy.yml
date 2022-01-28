@@ -27,6 +27,8 @@ spec:
           env:
             - name: ADMIN_PASSWORD
               value: 'admin'
+            - name: LOGLEVEL
+              value: 'DEBUG'
       serviceAccountName: k8s-secret-editor
 ---
 apiVersion: v1

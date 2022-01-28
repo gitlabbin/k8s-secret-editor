@@ -27,13 +27,6 @@ except ImportError:
     from httplib import HTTPConnection  # py2
 
 urllib3.disable_warnings(InsecureRequestWarning)
-# You must initialize logging, otherwise you'll not see debug output.
-logging.basicConfig()
-logging.getLogger().setLevel(logging.DEBUG)
-requests_log = logging.getLogger("requests.packages.urllib3")
-requests_log.setLevel(logging.DEBUG)
-requests_log.propagate = True
-
 logger = logging.getLogger('editor')
 
 

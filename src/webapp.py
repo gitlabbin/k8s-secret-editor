@@ -10,7 +10,10 @@ import logging
 import logging.config
 
 importlib.reload(sys)
-logging.config.fileConfig("logging.conf")
+
+#logging.config.fileConfig("logging.conf")
+LOGLEVEL = os.environ.get('LOGLEVEL', 'INFO').upper()
+logging.basicConfig(level=LOGLEVEL, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
 if sys.version[0] == '2':
     from imp import reload
