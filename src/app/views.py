@@ -27,6 +27,8 @@ requests_log = logging.getLogger("requests.packages.urllib3")
 requests_log.setLevel(logging.DEBUG)
 requests_log.propagate = True
 
+logger = logging.getLogger('editor')
+
 def get_namespaces():
     # namespaces=['nm1','nm2','nm3']
     namespaces=[]
@@ -199,11 +201,10 @@ def edit_secret(namespace,secret):
             for x in d['data']:
                 try:
                     data[x] = base64.b64decode(d['data'][x]).decode("utf-8")
-                except:
-                    print("An exception occurred maybe it is a binary file???")
+                except Exception as ex:
+                    logger.error("An exception occurred maybe it is a binary file: %s", ex)
                     data[x] = "Can't open the file, if it is binary"
-                #print(data[x])
-                logging.info(data[x])
+                logger.info(data[x])
         return render_template('edit_secret.html',namespaces=namespaces, secrets=secrets, namespace=d['metadata']['namespace'], secret=d['metadata']['name'], data=data, titulo='Edit secret', errors='')
     else:
         return render_template('select_secret.html', namespaces=namespaces, secrets=secrets, namespace=namespace, titulo='Select secret', error='Secret does not exist in selected namespace')

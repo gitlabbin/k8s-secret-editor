@@ -10,9 +10,7 @@ import logging
 import logging.config
 
 importlib.reload(sys)
-#setup
 logging.config.fileConfig("logging.conf")
-logging.getLogger("simpleExample")
 
 if sys.version[0] == '2':
      from imp import reload
