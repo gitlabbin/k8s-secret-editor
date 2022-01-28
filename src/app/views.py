@@ -1,25 +1,20 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from requests.auth import HTTPDigestAuth
 from functools import wraps
-from flask import render_template, flash, redirect, request, send_from_directory, Response
+from flask import render_template, flash, redirect, request, send_from_directory, Response, url_for
 from . import app
 # from .forms import SearchForm
 import requests
-import logging
 import json
-import yaml
 import pprint
 import base64
 import os
-from config import *
 import urllib3
 from urllib3.exceptions import InsecureRequestWarning
 from pprint import pformat
 
 import logging
 import logging.config
-import contextlib
 from config import settings
 
 try:
@@ -69,10 +64,30 @@ def get_namespaces():
     return namespaces
 
 
+def check_admin(username):
+    """This function is called to check if a username /
+    password combination is valid.
+    """
+    users = settings["users"]
+    admins = settings["admins"]
+    viewers = settings["viewers"]
+    user = list(filter(lambda item: item == username, admins))
+
+    if len(user) == 1:
+        return True
+    else:
+        return False
+
+
 def check_auth(username, password):
     """This function is called to check if a username /
     password combination is valid.
     """
+    # If ADMIN_PASSWORD defined, then check that password is correct
+    # if 'ADMIN_PASSWORD' in os.environ and os.environ['ADMIN_PASSWORD'] != '':
+    #     return username == 'admin' and password == os.environ['ADMIN_PASSWORD']
+    # else:
+    #     return True
     users = settings["users"]
     admins = settings["admins"]
     viewers = settings["viewers"]
@@ -82,12 +97,6 @@ def check_auth(username, password):
         return password == base64.b64decode(user[0]["password"]).decode("utf-8")
     else:
         return False
-
-    # If ADMIN_PASSWORD defined, then check that password is correct
-    if 'ADMIN_PASSWORD' in os.environ and os.environ['ADMIN_PASSWORD'] != '':
-        return username == 'admin' and password == os.environ['ADMIN_PASSWORD']
-    else:
-        return True
 
 
 def authenticate():
@@ -107,6 +116,22 @@ def requires_auth(f):
         return f(*args, **kwargs)
 
     return decorated
+
+
+def admin_required(func):
+    """
+    Modified login_required decorator to restrict access to admin group.
+    """
+
+    @wraps(func)
+    def decorated_view(*args, **kwargs):
+        auth = request.authorization
+        if not auth or not check_admin(auth.username):
+            flash("You don't have permission to access this resource.", "warning")
+            return redirect(url_for("search_namespaces"))
+        return func(*args, **kwargs)
+
+    return decorated_view
 
 
 # Custom static data
@@ -198,6 +223,7 @@ def search_secrets(namespace):
 
 @app.route('/<string:namespace>', methods=['POST'])
 @requires_auth
+@admin_required
 def create_secret(namespace):
     request.get_data()
     secret = request.form['secret']
@@ -254,9 +280,14 @@ def edit_secret(namespace, secret):
                     # logger.error("An exception occurred maybe it is a binary file: %s", exc_info=True)
                     data[x] = "Can't open the file, if it is binary"
                 logger.debug(data[x])
+        auth = request.authorization
+        if auth and check_admin(auth.username):
+            role = 'admin'
+        else:
+            role = 'viewer'
         return render_template('edit_secret.html', namespaces=namespaces, secrets=secrets,
                                namespace=d['metadata']['namespace'], secret=d['metadata']['name'], data=data,
-                               titulo='Edit secret', errors='')
+                               titulo='Edit secret', errors='', role=role)
     else:
         return render_template('select_secret.html', namespaces=namespaces, secrets=secrets, namespace=namespace,
                                titulo='Select secret', error='Secret does not exist in selected namespace')
@@ -264,6 +295,7 @@ def edit_secret(namespace, secret):
 
 @app.route('/<string:namespace>/<string:secret>', methods=['POST'])
 @requires_auth
+@admin_required
 def submit_secret(namespace, secret):
     request.get_data()
     data = request.form
@@ -324,6 +356,7 @@ def submit_secret(namespace, secret):
 
 @app.route('/<string:namespace>/<string:secret>/delete', methods=['GET'])
 @requires_auth
+@admin_required
 def delete_secret(namespace, secret):
     rd = delete_api('/api/v1/namespaces/' + namespace + '/secrets/' + secret)
     print('delete:')

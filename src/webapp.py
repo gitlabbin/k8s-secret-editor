@@ -3,7 +3,6 @@
 
 from app import app
 import sys
-from config import *
 import os
 import importlib
 import logging
