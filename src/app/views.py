@@ -235,6 +235,7 @@ def edit_secret(namespace, secret):
 
     namespaces = get_namespaces()
 
+    logger.info("request: %s/secrets/%s >>>", namespace, secret)
     r = read_api('/api/v1/namespaces/' + namespace + '/secrets/' + secret)
     if r.status_code == 200:
         d = json.loads(r.content)
