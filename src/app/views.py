@@ -15,7 +15,7 @@ from pprint import pformat
 
 import logging
 import logging.config
-from config import settings
+from .settings import settings
 
 try:
     from http.client import HTTPConnection  # py3
