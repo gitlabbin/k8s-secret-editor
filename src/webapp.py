@@ -13,14 +13,14 @@ importlib.reload(sys)
 logging.config.fileConfig("logging.conf")
 
 if sys.version[0] == '2':
-     from imp import reload
-     reload(sys)
-     sys.setdefaultencoding("utf-8")
+    from imp import reload
 
+    reload(sys)
+    sys.setdefaultencoding("utf-8")
 
 debug = False
 
 if 'DEBUG' in os.environ and os.environ['DEBUG'] == "1":
-     debug = True
+    debug = True
 
-app.run(debug=debug,host='0.0.0.0', port=8080)
+app.run(debug=debug, host='0.0.0.0', port=8080)
