@@ -15,6 +15,7 @@ import os
 from config import *
 import urllib3
 from urllib3.exceptions import InsecureRequestWarning
+from pprint import pformat
 
 import logging
 import logging.config
@@ -239,7 +240,7 @@ def edit_secret(namespace, secret):
     r = read_api('/api/v1/namespaces/' + namespace + '/secrets/' + secret)
     if r.status_code == 200:
         d = json.loads(r.content)
-        pprint.pprint(d)
+        logger.debug(pformat(d))
         data = {}
         if 'data' in d:
             for x in d['data']:
