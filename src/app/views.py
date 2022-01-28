@@ -240,7 +240,8 @@ def edit_secret(namespace, secret):
                 try:
                     data[x] = base64.b64decode(d['data'][x]).decode("utf-8")
                 except Exception as ex:
-                    logger.error("An exception occurred maybe it is a binary file: %s", ex)
+                    logger.warn("An exception occurred maybe it is binary file: %s", ex)
+                    # logger.error("An exception occurred maybe it is a binary file: %s", exc_info=True)
                     data[x] = "Can't open the file, if it is binary"
                 logger.debug(data[x])
         return render_template('edit_secret.html', namespaces=namespaces, secrets=secrets,
