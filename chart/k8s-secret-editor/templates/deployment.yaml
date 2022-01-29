@@ -39,7 +39,7 @@ spec:
               protocol: TCP
           env:
             - name: LOGLEVEL
-              value: { { .Values.loglevel } }
+              value: {{ .Values.loglevel }}
           livenessProbe:
             httpGet:
               path: /
