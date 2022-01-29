@@ -1,10 +1,15 @@
 from flask import Flask
+import sys
+
+sys.path.insert(0, "..")
 
 app = Flask(__name__)
 app.config.from_object('config')
 
-
-from . import (
-    views,
-    forms
-)
+try:
+    from . import (
+        views,
+        forms
+    )
+except Exception:
+    raise

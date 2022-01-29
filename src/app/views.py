@@ -64,6 +64,14 @@ def get_namespaces():
     return namespaces
 
 
+def check_role():
+    auth = request.authorization
+    if auth and check_admin(auth.username):
+        return 'admin'
+    else:
+        return 'viewer'
+
+
 def check_admin(username):
     """This function is called to check if a username /
     password combination is valid.
@@ -218,7 +226,7 @@ def search_secrets(namespace):
     namespaces = get_namespaces()
 
     return render_template('select_secret.html', namespace=namespace, namespaces=namespaces, secrets=secrets,
-                           titulo='Selecciona secret')
+                           titulo='Selecciona secret', role=check_role())
 
 
 @app.route('/<string:namespace>', methods=['POST'])
@@ -280,17 +288,14 @@ def edit_secret(namespace, secret):
                     # logger.error("An exception occurred maybe it is a binary file: %s", exc_info=True)
                     data[x] = "Can't open the file, if it is binary"
                 logger.debug(data[x])
-        auth = request.authorization
-        if auth and check_admin(auth.username):
-            role = 'admin'
-        else:
-            role = 'viewer'
+
         return render_template('edit_secret.html', namespaces=namespaces, secrets=secrets,
                                namespace=d['metadata']['namespace'], secret=d['metadata']['name'], data=data,
-                               titulo='Edit secret', errors='', role=role)
+                               titulo='Edit secret', errors='', role=check_role())
     else:
         return render_template('select_secret.html', namespaces=namespaces, secrets=secrets, namespace=namespace,
-                               titulo='Select secret', error='Secret does not exist in selected namespace')
+                               titulo='Select secret', error='Secret does not exist in selected namespace',
+                               role=check_role())
 
 
 @app.route('/<string:namespace>/<string:secret>', methods=['POST'])
@@ -376,8 +381,9 @@ def delete_secret(namespace, secret):
     if rd.status_code == 200:
         flash('Removed secret: ' + secret)
         return render_template('select_secret.html', namespace=namespace, namespaces=namespaces, secrets=secrets,
-                               titulo='Select secret')
+                               titulo='Select secret', role=check_role())
     else:
         flash('ERROR WHEN REMOVING SECRET: ' + secret)
         return render_template('select_secret.html', namespace=namespace, namespaces=namespaces, secrets=secrets,
-                               titulo='Select secret', error='Secret could not be removed ' + secret)
+                               titulo='Select secret', error='Secret could not be removed ' + secret,
+                               role=check_role())
