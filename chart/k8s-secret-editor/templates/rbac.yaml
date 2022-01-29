@@ -1,0 +1,35 @@
+---
+{{ if not .Values.rbac.clusterScoped }}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: {{ include "k8s-secret-editor.roleKind" . }}
+metadata:
+  name: {{ include "k8s-secret-editor.fullname" . }}
+rules:
+  - apiGroups: [""]
+    resources: [secrets]
+    verbs: ["*"]
+{{ end }}
+---
+
+{{- if .Values.rbac.create }}
+kind: {{ include "k8s-secret-editor.roleKind" . }}Binding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: {{ include "k8s-secret-editor.fullname" . }}
+  labels:
+  {{- include "k8s-secret-editor.labels" . | nindent 4 }}
+subjects:
+  - kind: ServiceAccount
+    name: {{ include "k8s-secret-editor.serviceAccountName" . }}
+    {{- if .Values.rbac.clusterScoped }}
+    namespace: {{ .Release.Namespace }}
+    {{- end }}
+roleRef:
+  kind: {{ include "k8s-secret-editor.roleKind" . }}
+  {{ if .Values.rbac.clusterScoped }}
+  name: cluster-admin
+  {{ else }}
+  name: {{ include "k8s-secret-editor.fullname" . }}
+  {{ end }}
+  apiGroup: rbac.authorization.k8s.io
+{{- end }}

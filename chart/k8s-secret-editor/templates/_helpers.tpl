@@ -60,3 +60,10 @@ Create the name of the service account to use
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
 {{- end }}
+
+{{/*
+Create the kind of the RAC role
+*/}}
+{{- define "k8s-secret-editor.roleKind" -}}
+{{- if .Values.rbac.clusterScoped -}}Cluster{{- end -}}Role
+{{- end }}
