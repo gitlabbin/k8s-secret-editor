@@ -41,6 +41,8 @@ spec:
           env:
             - name: LOGLEVEL
               value: {{ .Values.loglevel }}
+            - name: WATCH_NAMESPACE
+              value: {{ .Values.watchnamespace }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
