@@ -1,5 +1,6 @@
 from flask import Flask
 import sys
+import flask_login
 
 sys.path.insert(0, "..")
 

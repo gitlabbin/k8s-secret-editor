@@ -17,6 +17,10 @@ import logging
 import logging.config
 from .settings import settings
 
+import flask_login
+import flask
+from .user import users, user_loader, request_loader, User
+
 try:
     from http.client import HTTPConnection  # py3
 except ImportError:
@@ -203,8 +207,34 @@ def delete_api(query):
     return response
 
 
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if flask.request.method == 'GET':
+        return render_template('login.html')
+
+    email = flask.request.form['email']
+    if email in users and flask.request.form['password'] == users[email]['password']:
+        user = User()
+        user.id = email
+        flask_login.login_user(user)
+        return flask.redirect(flask.url_for('search_namespaces'))
+
+    if email not in users:
+        flash('Email address not exists')
+    else:
+        flash('Check your password')
+    return render_template('login.html')
+
+
+@app.route('/logout')
+def logout():
+    flask_login.logout_user()
+    return render_template('login.html')
+
+
 @app.route('/', methods=['GET'])
-@requires_auth
+#@requires_auth
+@flask_login.login_required
 def search_namespaces():
     # namespaces=['nm1','nm2','nm3']
     namespaces = get_namespaces()
@@ -213,7 +243,8 @@ def search_namespaces():
 
 
 @app.route('/<string:namespace>', methods=['GET'])
-@requires_auth
+#@requires_auth
+@flask_login.login_required
 def search_secrets(namespace):
     # secrets=['secret-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA','secret B', 'secret C']
     # namespaces=['nm1','nm2','nm3']
@@ -230,8 +261,9 @@ def search_secrets(namespace):
 
 
 @app.route('/<string:namespace>', methods=['POST'])
-@requires_auth
-@admin_required
+#@requires_auth
+#@admin_required
+@flask_login.login_required
 def create_secret(namespace):
     request.get_data()
     secret = request.form['secret']
@@ -262,7 +294,8 @@ def create_secret(namespace):
 
 
 @app.route('/<string:namespace>/<string:secret>', methods=['GET'])
-@requires_auth
+#@requires_auth
+@flask_login.login_required
 def edit_secret(namespace, secret):
     secrets = []
     r = read_api('/api/v1/namespaces/' + namespace + '/secrets')
@@ -299,8 +332,9 @@ def edit_secret(namespace, secret):
 
 
 @app.route('/<string:namespace>/<string:secret>', methods=['POST'])
-@requires_auth
-@admin_required
+#@requires_auth
+#@admin_required
+@flask_login.login_required
 def submit_secret(namespace, secret):
     request.get_data()
     data = request.form
@@ -360,8 +394,9 @@ def submit_secret(namespace, secret):
 
 
 @app.route('/<string:namespace>/<string:secret>/delete', methods=['GET'])
-@requires_auth
-@admin_required
+#@requires_auth
+#@admin_required
+@flask_login.login_required
 def delete_secret(namespace, secret):
     rd = delete_api('/api/v1/namespaces/' + namespace + '/secrets/' + secret)
     print('delete:')
