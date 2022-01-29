@@ -62,5 +62,5 @@ spec:
       volumes:
         - configMap:
             defaultMode: 420
-            name: k8s-editor-config-yml-cm
+            name: {{ .Release.Name }}-configmap
           name: k8s-editor-config-cm
