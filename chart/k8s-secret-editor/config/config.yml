@@ -1,12 +1,9 @@
 admins:
-  - brian.chen
   - admin
 viewers:
   - tester
 
 users:
-  - name: brian.chen
-    password: "dlF6NmxNUDFvdGJxQzFtMnBNR3lzemVaaWNJQlFBMG1PYWptRFE5YUlvaz0="
   - name: tester
     password: "Q1RpQUhSRVpQVllZWUN5ZGZvZ2Fmb1lOZ2FxWHBwcktjcXIwb0xjVFU3TT0="
   - name: admin
