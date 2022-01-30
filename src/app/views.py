@@ -70,29 +70,6 @@ def get_namespaces():
     return namespaces
 
 
-def check_role():
-    auth = request.authorization
-    if auth and check_admin(auth.username):
-        return 'admin'
-    else:
-        return 'viewer'
-
-
-def check_admin(username):
-    """This function is called to check if a username /
-    password combination is valid.
-    """
-    users = settings["users"]
-    admins = settings["admins"]
-    viewers = settings["viewers"]
-    user = list(filter(lambda item: item == username, admins))
-
-    if len(user) == 1:
-        return True
-    else:
-        return False
-
-
 def check_auth(username, password):
     """This function is called to check if a username /
     password combination is valid.

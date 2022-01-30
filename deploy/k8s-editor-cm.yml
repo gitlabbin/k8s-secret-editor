@@ -11,6 +11,8 @@ data:
 
     users:
       - name: tester
+        email: tester@bar.tld
         password: "Q1RpQUhSRVpQVllZWUN5ZGZvZ2Fmb1lOZ2FxWHBwcktjcXIwb0xjVFU3TT0="
       - name: admin
+        email: admin@bar.tld
         password: "YWRtaW4="
