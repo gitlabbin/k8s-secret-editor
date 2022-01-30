@@ -219,7 +219,7 @@ def search_namespaces():
     # namespaces=['nm1','nm2','nm3']
     namespaces = get_namespaces()
 
-    return render_template('select_namespace.html', namespaces=namespaces, titulo='Selecciona namespace')
+    return render_template('select_namespace.html', namespaces=namespaces, titulo='Choose namespace')
 
 
 @app.route('/<string:namespace>', methods=['GET'])
@@ -237,7 +237,7 @@ def search_secrets(namespace):
     namespaces = get_namespaces()
 
     return render_template('select_secret.html', namespace=namespace, namespaces=namespaces, secrets=secrets,
-                           titulo='Selecciona secret', role=current_user.role)
+                           titulo='Choose secret', role=current_user.role)
 
 
 @app.route('/<string:namespace>', methods=['POST'])
