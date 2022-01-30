@@ -21,7 +21,7 @@ import flask_login
 import flask
 from .auth import users, user_loader, request_loader
 from .user import User
-from flask_login import  current_user
+from flask_login import current_user
 
 try:
     from http.client import HTTPConnection  # py3
@@ -139,8 +139,7 @@ def admin_required(func):
 
     @wraps(func)
     def decorated_view(*args, **kwargs):
-        auth = request.authorization
-        if not auth or not check_admin(auth.username):
+        if not current_user.role == 'admin':
             flash("You don't have permission to access this resource.", "warning")
             return redirect(url_for("search_namespaces"))
         return func(*args, **kwargs)
@@ -266,7 +265,7 @@ def search_secrets(namespace):
 
 @app.route('/<string:namespace>', methods=['POST'])
 #@requires_auth
-#@admin_required
+@admin_required
 @flask_login.login_required
 def create_secret(namespace):
     request.get_data()
@@ -337,7 +336,7 @@ def edit_secret(namespace, secret):
 
 @app.route('/<string:namespace>/<string:secret>', methods=['POST'])
 #@requires_auth
-#@admin_required
+@admin_required
 @flask_login.login_required
 def submit_secret(namespace, secret):
     request.get_data()
@@ -399,7 +398,7 @@ def submit_secret(namespace, secret):
 
 @app.route('/<string:namespace>/<string:secret>/delete', methods=['GET'])
 #@requires_auth
-#@admin_required
+@admin_required
 @flask_login.login_required
 def delete_secret(namespace, secret):
     rd = delete_api('/api/v1/namespaces/' + namespace + '/secrets/' + secret)
