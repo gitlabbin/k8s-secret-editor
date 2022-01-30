@@ -19,7 +19,9 @@ from .settings import settings
 
 import flask_login
 import flask
-from .user import users, user_loader, request_loader, User
+from .auth import users, user_loader, request_loader
+from .user import User
+from flask_login import  current_user
 
 try:
     from http.client import HTTPConnection  # py3
@@ -213,13 +215,15 @@ def login():
         return render_template('login.html')
 
     email = flask.request.form['email']
-    if email in users and flask.request.form['password'] == users[email]['password']:
+    user_filtered = list(filter(lambda item: item.email == email, users))
+    if len(user_filtered) == 1 and flask.request.form['password'] == user_filtered[0].password:
         user = User()
         user.id = email
+        user.role = user_filtered[0].role
         flask_login.login_user(user)
         return flask.redirect(flask.url_for('search_namespaces'))
 
-    if email not in users:
+    if len(user_filtered) == 0:
         flash('Email address not exists')
     else:
         flash('Check your password')
@@ -257,7 +261,7 @@ def search_secrets(namespace):
     namespaces = get_namespaces()
 
     return render_template('select_secret.html', namespace=namespace, namespaces=namespaces, secrets=secrets,
-                           titulo='Selecciona secret', role=check_role())
+                           titulo='Selecciona secret', role=current_user.role)
 
 
 @app.route('/<string:namespace>', methods=['POST'])
@@ -324,11 +328,11 @@ def edit_secret(namespace, secret):
 
         return render_template('edit_secret.html', namespaces=namespaces, secrets=secrets,
                                namespace=d['metadata']['namespace'], secret=d['metadata']['name'], data=data,
-                               titulo='Edit secret', errors='', role=check_role())
+                               titulo='Edit secret', errors='', role=current_user.role)
     else:
         return render_template('select_secret.html', namespaces=namespaces, secrets=secrets, namespace=namespace,
                                titulo='Select secret', error='Secret does not exist in selected namespace',
-                               role=check_role())
+                               role=current_user.role)
 
 
 @app.route('/<string:namespace>/<string:secret>', methods=['POST'])
@@ -416,9 +420,9 @@ def delete_secret(namespace, secret):
     if rd.status_code == 200:
         flash('Removed secret: ' + secret)
         return render_template('select_secret.html', namespace=namespace, namespaces=namespaces, secrets=secrets,
-                               titulo='Select secret', role=check_role())
+                               titulo='Select secret', role=current_user.role)
     else:
         flash('ERROR WHEN REMOVING SECRET: ' + secret)
         return render_template('select_secret.html', namespace=namespace, namespaces=namespaces, secrets=secrets,
                                titulo='Select secret', error='Secret could not be removed ' + secret,
-                               role=check_role())
+                               role=current_user.role)
