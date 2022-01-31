@@ -19,7 +19,7 @@ from .settings import settings
 
 import flask_login
 import flask
-from .auth import users, user_loader, request_loader
+from .auth import users
 from .user import User
 from flask_login import current_user
 
@@ -66,7 +66,7 @@ def get_namespaces():
                 namespaces.append(i['metadata']['name'])
     except:
         user_namespace = os.environ.get('WATCH_NAMESPACE', 'default')
-        namespaces.append(user_namespace)
+        namespaces = user_namespace.split(',')
     return namespaces
 
 
@@ -79,10 +79,10 @@ def check_auth(username, password):
     #     return username == 'admin' and password == os.environ['ADMIN_PASSWORD']
     # else:
     #     return True
-    users = settings["users"]
+    users_raw = settings["users"]
     admins = settings["admins"]
     viewers = settings["viewers"]
-    user = list(filter(lambda item: item["name"] == username, users))
+    user = list(filter(lambda item: item["name"] == username, users_raw))
 
     if len(user) == 1:
         return password == base64.b64decode(user[0]["password"]).decode("utf-8")
@@ -297,7 +297,7 @@ def edit_secret(namespace, secret):
                 try:
                     data[x] = base64.b64decode(d['data'][x]).decode("utf-8")
                 except Exception as ex:
-                    logger.warn("An exception occurred maybe it is binary file: %s", ex)
+                    logger.warning("An exception occurred maybe it is binary file: %s", ex)
                     # logger.error("An exception occurred maybe it is a binary file: %s", exc_info=True)
                     data[x] = "Can't open the file, if it is binary"
                 logger.debug(data[x])

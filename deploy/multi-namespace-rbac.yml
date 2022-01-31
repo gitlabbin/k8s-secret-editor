@@ -1,0 +1,62 @@
+# namespace develop
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: k8s-secret-editor-role
+  namespace: develop
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - secrets
+  verbs:
+  - '*'
+
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: k8s-secret-editor
+  namespace: develop
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: k8s-secret-editor-rolebinding
+  namespace: develop
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: k8s-secret-editor-role
+subjects:
+- kind: ServiceAccount
+  name: k8s-secret-editor
+
+# namespace develop-ci
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: k8s-secret-editor-role
+  namespace: develop-ci
+rules:
+- apiGroups: [""]
+  resources: ["secrets"]
+  verbs: ["*"]
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: k8s-secret-editor-from-develop-rolebinding
+  namespace: develop-ci
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: k8s-secret-editor-role
+subjects:
+- kind: ServiceAccount
+  name: k8s-secret-editor
+  namespace: develop

@@ -44,3 +44,6 @@ docker pull bqitdevops/k8s-secret-editor
 As it will be used to manage sensitive information, we secured the access to the web with basic http authentication:
 * User: *admin*
 * Password: Defined in the environment variable ADMIN_PASSWORD. If you are deploying with the file k8s-deployment.yaml, by default it is *admin*
+
+# Helm chart doc
+https://helm.sh/docs/chart_template_guide/variables/

@@ -1,0 +1,31 @@
+# Give sa in ns1 to access ns2
+
+# You can simply reference a ServiceAccount from another namespace in the RoleBinding
+# RoleBinding in ns2 reference sa in ns1
+# then sa in ns1 can access ns2
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: pod-reader
+  namespace: ns2
+rules:
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["get", "list", "watch"]
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: pod-reader-from-ns1
+  namespace: ns2
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: pod-reader
+subjects:
+- kind: ServiceAccount
+  name: ns1-service-account
+  namespace: ns1

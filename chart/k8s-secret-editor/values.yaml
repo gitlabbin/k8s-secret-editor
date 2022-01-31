@@ -87,4 +87,4 @@ tolerations: []
 affinity: {}
 
 loglevel: DEBUG
-watchnamespace: default
+watchnamespace: "default,kubernetes-dashboard"

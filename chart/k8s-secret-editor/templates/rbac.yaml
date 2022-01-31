@@ -11,6 +11,7 @@ rules:
 {{ end }}
 ---
 
+{{ if .Values.rbac.clusterScoped }}
 {{- if .Values.rbac.create }}
 kind: {{ include "k8s-secret-editor.roleKind" . }}Binding
 apiVersion: rbac.authorization.k8s.io/v1
@@ -33,3 +34,5 @@ roleRef:
   {{ end }}
   apiGroup: rbac.authorization.k8s.io
 {{- end }}
+{{ end }}
+

@@ -67,3 +67,10 @@ Create the kind of the RAC role
 {{- define "k8s-secret-editor.roleKind" -}}
 {{- if .Values.rbac.clusterScoped -}}Cluster{{- end -}}Role
 {{- end }}
+
+{{/*
+Create the sa namespace
+*/}}
+{{- define "k8s-secret-editor.saNamespace" -}}
+{{ (splitList "," .Values.watchnamespace | first) }}
+{{- end }}

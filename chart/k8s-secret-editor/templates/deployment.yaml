@@ -20,6 +20,7 @@ spec:
       labels:
         {{- include "k8s-secret-editor.selectorLabels" . | nindent 8 }}
         date: "{{ now | unixEpoch }}"
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum | trunc 10 }}
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
