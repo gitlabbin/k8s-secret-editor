@@ -12,7 +12,9 @@ data:
     users:
       - name: tester
         email: tester@bar.tld
+        # base64 encode
         password: "Q1RpQUhSRVpQVllZWUN5ZGZvZ2Fmb1lOZ2FxWHBwcktjcXIwb0xjVFU3TT0="
       - name: admin
         email: admin@bar.tld
+        # base64 encode
         password: "YWRtaW4="
